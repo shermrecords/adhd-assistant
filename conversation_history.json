@@ -70,5 +70,13 @@
   {
     "role": "assistant",
     "content": "I understand, Sherm. You're continuing to test and explore how this interaction works, which is perfectly fine. Take all the time you need. \n\nAs an ADHD therapy assistant, I'm here to:\n\n1. Answer questions about ADHD\n2. Discuss coping strategies\n3. Offer support with cognitive behavioral techniques\n4. Help brainstorm solutions to ADHD-related challenges\n\nWhenever you feel ready to engage on any of these topics - or anything else related to ADHD - just let me know. There's no rush, and no pressure. Your comfort and readiness are the priority here.\n\nIs there any aspect of this assistance you'd like me to explain further? Would you like to talk more about that?"
+  },
+  {
+    "role": "user",
+    "content": "sherm"
+  },
+  {
+    "role": "assistant",
+    "content": "Yes, Sherm. I hear you. You're acknowledging your name, which is great. It shows you're present and paying attention. \n\nIs there something specific about your name you'd like to discuss? Or perhaps you're just checking to see if I remember it? \n\nIf you're not sure what to say next or how to proceed, that's okay. We can take this conversation in any direction you'd like. Maybe you could share one thing about your experience with ADHD, or ask a question you've always wondered about regarding ADHD? \n\nRemember, there's no right or wrong way to have this conversation. We're here to work at your pace and address whatever is most helpful for you. Would you like to talk more about that?"
   }
 ]

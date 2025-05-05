@@ -32,7 +32,8 @@
 <body>
     <h1>Edit Conversation History</h1>
     <form action="/history/save" method="POST">
-        {% for idx, message in enumerate(conversation) %}
+        {% for message in conversation %}
+            {% set idx = loop.index0 %}
             <div class="entry">
                 <div class="role-label">{{ message.role.capitalize() }}</div>
                 <input type="hidden" name="role_{{ idx }}" value="{{ message.role }}">
@@ -44,4 +45,3 @@
     </form>
 </body>
 </html>
-
