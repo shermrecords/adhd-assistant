@@ -69,6 +69,28 @@ def get_assistant_reply(payload):
         print(f"An error occurred: {e}")
         raise e
 
+@app.route('/history/edit', methods=['GET'])
+def edit_history():
+    conversation = load_conversation()
+    return render_template('edit_history.html', conversation=conversation)
+
+@app.route('/history/save', methods=['POST'])
+def save_history():
+    try:
+        total = int(request.form['total'])
+        conversation = []
+        for i in range(total):
+            role = request.form.get(f'role_{i}')
+            content = request.form.get(f'content_{i}')
+            if role and content:
+                conversation.append({"role": role, "content": content})
+        save_conversation(conversation)
+        return "Conversation history updated successfully!"
+    except Exception as e:
+        return f"Error saving conversation: {str(e)}", 400
+
+
+
 @app.route('/')
 def home():
     return render_template('index.html')
