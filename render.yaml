@@ -1,0 +1,14 @@
+# render.yaml
+services:
+  - type: web
+    name: adhd-assistant
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    envVars:
+      - key: AWS_ACCESS_KEY_ID
+        value: your-access-key-id
+      - key: AWS_SECRET_ACCESS_KEY
+        value: your-secret-access-key
+      - key: AWS_DEFAULT_REGION
+        value: us-east-1
