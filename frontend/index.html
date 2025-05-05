@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ADHD Therapy Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #chatBox {
+      margin-top: 20px;
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      background-color: #f9f9f9;
+    }
+    .message {
+      margin-bottom: 10px;
+    }
+    .user {
+      font-weight: bold;
+      color: #007bff;
+    }
+    .assistant {
+      font-weight: bold;
+      color: #28a745;
+    }
+  </style>
+</head>
+<body>
+  <h1>ADHD Therapy Assistant</h1>
+
+  <div>
+    <input type="text" id="userInput" placeholder="Type your question here..." />
+    <button onclick="sendText()">Send</button>
+    <button onclick="startListening()">🎤 Speak</button>
+  </div>
+
+  <div id="chatBox"></div>
+
+  <script>
+    async function sendText() {
+      const input = document.getElementById('userInput').value;
+      if (!input.trim()) return;
+
+      displayMessage('User', input);
+      document.getElementById('userInput').value = '';
+
+      try {
+        const response = await fetch('https://adhd-assistant.onrender.com', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ input })
+        });
+
+        const data = await response.json();
+        const reply = data.responseText || "Sorry, I couldn't understand the response.";
+        displayMessage('Assistant', reply);
+        speak(reply);
+      } catch (error) {
+        displayMessage('Assistant', 'Error: Could not reach the server.');
+        console.error(error);
+      }
+    }
+
+    function startListening() {
+      const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.start();
+
+      recognition.onresult = async function(event) {
+        const transcript = event.results[0][0].transcript;
+        displayMessage('User', transcript);
+
+        try {
+          const response = await fetch('https://adhd-assistant.onrender.com/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ input: transcript })  // Use transcript here
+          });
+
+          const data = await response.json();
+          const reply = data.responseText || "Sorry, I couldn't understand the response.";
+          displayMessage('Assistant', reply);
+          speak(reply);
+        } catch (error) {
+          displayMessage('Assistant', 'Error: Could not reach the server.');
+          console.error(error);
+        }
+      };
+
+      recognition.onerror = function(event) {
+        displayMessage('Assistant', 'Error with speech recognition: ' + event.error);
+        console.error(event.error);
+      };
+    }
+
+    function speak(text) {
+      const synth = window.speechSynthesis;
+      const utterance = new SpeechSynthesisUtterance(text);
+      synth.speak(utterance);
+    }
+
+    function displayMessage(sender, text) {
+      const chatBox = document.getElementById('chatBox');
+      const message = document.createElement('div');
+      message.classList.add('message');
+
+      if (sender === 'User') {
+        message.innerHTML = `<span class="user">User:</span> ${text}`;
+      } else {
+        message.innerHTML = `<span class="assistant">Assistant:</span> ${text}`;
+      }
+
+      chatBox.appendChild(message);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
