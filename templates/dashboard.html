@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADHD Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <div class="header-card">
+      <b>Dr. John P. Shallcross</b><br />ADHD Therapeutic Assistant
+    </div>
+
+    <div class="app">
+      <main id="chatBox" class="chat-box"></main>
+
+      <div class="controls">
+        <input type="text" id="userInput" placeholder="Type a message..." autocomplete="off" />
+        <button onclick="sendText()">Send</button>
+        <button onclick="startListening()" class="mic">Speak</button>
+      </div>
+    </div>
+
+    <div class="edit-history-link">
+      <p><a href="{{ url_for('edit_history') }}">Edit Conversation History</a></p>
+    </div>
+
+    <p><a href="{{ url_for('logout') }}">Logout</a></p>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
