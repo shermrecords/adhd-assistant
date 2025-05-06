@@ -10,6 +10,8 @@ from botocore.exceptions import ClientError
 app = Flask(__name__)
 CORS(app)
 
+s3 = boto3.client('s3', region_name='us-east-1')
+bucket_name = "adhd-ai-logs"
 # AWS Bedrock client setup
 bedrock = boto3.client('bedrock-runtime', region_name='us-east-1')
 model_id = 'anthropic.claude-3-5-sonnet-20240620-v1:0'
@@ -17,18 +19,26 @@ model_id = 'anthropic.claude-3-5-sonnet-20240620-v1:0'
 system_prompt = "You are a compassionate ADHD therapy assistant trained in cognitive behavioral techniques."
 
 # Conversation persistence
-def load_conversation(filename='conversation_history.json'):
-    if os.path.exists(filename):
-        try:
-            with open(filename, 'r') as f:
-                return json.load(f)
-        except json.JSONDecodeError:
-            print(f"Warning: {filename} is not a valid JSON file. Starting fresh.")
-    return []
+def load_conversation():
+    try:
+        response = s3.get_object(Bucket=bucket_name, Key='conversation_history.json')
+        conversation = json.loads(response['Body'].read().decode('utf-8'))
+    except ClientError as e:
+        print(f"Error loading conversation: {e}")
+        conversation = []
+    return conversation
 
-def save_conversation(conversation, filename='conversation_history.json'):
-    with open(filename, 'w') as f:
-        json.dump(conversation, f, indent=2)
+def save_conversation(conversation):
+    try:
+        s3.put_object(
+            Bucket=bucket_name,
+            Key='conversation_history.json',
+            Body=json.dumps(conversation, indent=2),
+            ContentType='application/json'
+        )
+        print("Conversation saved to S3.")
+    except ClientError as e:
+        print(f"Error saving conversation: {e}")
 
 # Retry decorator for throttling
 def exponential_backoff_with_jitter(func):
