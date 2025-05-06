@@ -150,5 +150,5 @@ def chat():
 
 if __name__ == '__main__':
     # Use PORT from env (e.g., Render), default to 8080
-    port = int(os.environ.get('PORT', 6969))
+    port = int(os.environ.get('PORT', 8080))
     app.run(debug=True, host='0.0.0.0', port=port)
