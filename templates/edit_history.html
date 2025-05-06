@@ -110,20 +110,21 @@
 </header>
 
 <div class="container">
-  <div class="history-box">
-    <form action="/history/save" method="POST">
-      {% for idx, message in enumerate(conversation) %}
-        <div class="entry">
-          <div class="role-label">{{ message.role.capitalize() }}</div>
-          <input type="hidden" name="role_{{ idx }}" value="{{ message.role }}">
-          <textarea name="content_{{ idx }}" placeholder="Edit the message...">{{ message.content }}</textarea>
-        </div>
-      {% endfor %}
-      <input type="hidden" name="total" value="{{ conversation|length }}">
-      <button type="submit">Save All</button>
-    </form>
+    <div class="history-box">
+      <form action="/history/save" method="POST">
+        {% for message in conversation %}
+          {% set idx = loop.index0 %}
+          <div class="entry">
+            <div class="role-label">{{ message.role.capitalize() }}</div>
+            <input type="hidden" name="role_{{ idx }}" value="{{ message.role }}">
+            <textarea name="content_{{ idx }}" placeholder="Edit the message...">{{ message.content }}</textarea>
+          </div>
+        {% endfor %}
+        <input type="hidden" name="total" value="{{ conversation|length }}">
+        <button type="submit">Save All</button>
+      </form>
+    </div>
   </div>
-</div>
 
 <footer>
   <p>&copy; 2025 Dr. John P. Shallcross. All rights reserved.</p>
