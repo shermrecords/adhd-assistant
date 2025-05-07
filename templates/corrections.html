@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Correct Assistant Responses</title>
+</head>
+<body>
+    <h2>Correct Assistant Responses</h2>
+    <form method="POST">
+        {% for user, assistant in pairs %}
+            <div style="margin-bottom: 20px;">
+                <label><strong>User:</strong></label><br>
+                <textarea name="user_{{ loop.index0 }}" rows="2" cols="80" readonly>{{ user }}</textarea><br>
+                
+                <label><strong>Original Assistant Response:</strong></label><br>
+                <textarea name="original_{{ loop.index0 }}" rows="3" cols="80" readonly>{{ assistant }}</textarea><br>
+
+                <label><strong>Corrected Response:</strong></label><br>
+                <textarea name="corrected_{{ loop.index0 }}" rows="3" cols="80">{{ assistant }}</textarea>
+            </div>
+        {% endfor %}
+        <input type="hidden" name="total" value="{{ pairs|length }}">
+        <button type="submit">Save Corrections</button>
+    </form>
+</body>
+</html>
