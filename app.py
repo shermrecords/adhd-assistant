@@ -28,29 +28,12 @@ You should:
     - Offer actionable advice and insights that the user can apply immediately in their daily life.
     - Keep responses at a practical level, avoiding theoretical over-explanation unless specifically asked for it.
     - If the user shows signs of frustration or confusion, acknowledge it empathetically and offer help.
+    - Keep responses short, clear, and focused unless the user requests elaboration.
+
+    
 """
 
 # Conversation persistence
-def load_conversation():
-    try:
-        response = s3.get_object(Bucket=bucket_name, Key='conversation_history.json')
-        conversation = json.loads(response['Body'].read().decode('utf-8'))
-    except ClientError as e:
-        print(f"Error loading conversation: {e}")
-        conversation = []
-    return conversation
-
-def save_conversation(conversation):
-    try:
-        s3.put_object(
-            Bucket=bucket_name,
-            Key='conversation_history.json',
-            Body=json.dumps(conversation, indent=2),
-            ContentType='application/json'
-        )
-        print("Conversation saved to S3.")
-    except ClientError as e:
-        print(f"Error saving conversation: {e}")
 
 # Retry decorator for throttling
 def exponential_backoff_with_jitter(func):
@@ -90,6 +73,50 @@ def get_assistant_reply(payload):
     except ClientError as e:
         print(f"An error occurred: {e}")
         raise e
+    
+def load_conversation():
+    try:
+        response = s3.get_object(Bucket=bucket_name, Key='conversation_history.json')
+        conversation = json.loads(response['Body'].read().decode('utf-8'))
+    except ClientError as e:
+        print(f"Error loading conversation: {e}")
+        conversation = []
+    return conversation
+
+def save_conversation(conversation):
+    try:
+        s3.put_object(
+            Bucket=bucket_name,
+            Key='conversation_history.json',
+            Body=json.dumps(conversation, indent=2),
+            ContentType='application/json'
+        )
+        print("Conversation saved to JSON.")
+    except ClientError as e:
+        print(f"Error saving conversation: {e}")
+
+def save_conversation_jsonl(conversation):
+    jsonl_lines = []
+    for i in range(0, len(conversation) - 1, 2):
+        if conversation[i]["role"] == "user" and conversation[i + 1]["role"] == "assistant":
+            chunk = {
+                "chunk_type": "dialogue_turn",
+                "text": f"User: {conversation[i]['content']}\nAssistant: {conversation[i+1]['content']}",
+                "tags": []  # Optional for now, can be updated later
+            }
+            jsonl_lines.append(json.dumps(chunk))
+
+    try:
+        s3.put_object(
+            Bucket=bucket_name,
+            Key='conversation_history.jsonl',
+            Body="\n".join(jsonl_lines),
+            ContentType='application/jsonl'
+        )
+        print("Conversation saved in JSONL format to S3.")
+    except ClientError as e:
+        print(f"Error saving conversation: {e}")
+# Keep old format for UI-based editing
 
 @app.route('/history/edit', methods=['GET'])
 def edit_history():
@@ -107,6 +134,7 @@ def save_history():
             if role and content:
                 conversation.append({"role": role, "content": content})
         save_conversation(conversation)
+        save_conversation_jsonl(conversation)
         return "Conversation history updated successfully!"
     except Exception as e:
         return f"Error saving conversation: {str(e)}", 400
@@ -136,7 +164,7 @@ def chat():
         "anthropic_version": "bedrock-2023-05-31",
         "system": system_prompt,
         "messages": messages,
-        "max_tokens": 500,
+        "max_tokens": 300,
         "temperature": 0.7
     }
 
@@ -144,6 +172,7 @@ def chat():
         reply = get_assistant_reply(payload)
         messages.append({"role": "assistant", "content": reply})
         save_conversation(messages)
+        save_conversation_jsonl(messages)
         return jsonify({'responseText': reply})
     except Exception as e:
         return jsonify({'responseText': f"An error occurred: {str(e)}"})

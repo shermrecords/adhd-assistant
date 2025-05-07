@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,9 +7,12 @@
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <div class="header-card"><b>Dr. John P. Shallcross</b><br>ADHD Therapeutic Assistant</div>
-  <br>
-  <a href="/history/edit">Edit Conversation History</a>
+  <div class="header-card">
+    <b>Dr. John P. Shallcross'</b><br>
+    ADHD therapy and psychological testing bot
+  </div>
+
+
   <div class="app">
     <main id="chatBox" class="chat-box"></main>
 
@@ -16,7 +20,7 @@
       <input type="text" id="userInput" placeholder="Type a message..." autocomplete="off">
       <button onclick="sendText()">Send</button>
       <button onclick="startListening()" class="mic">Speak</button>
-      <button onclick="repeatLastResponse()">Repeat</button>
+      <button onclick="window.open('/history/edit', '_blank')">Edit</button>
     </div>
   </div>
 
