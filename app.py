@@ -38,8 +38,8 @@ You should:
 # Retry decorator for throttling
 def exponential_backoff_with_jitter(func):
     def wrapper(*args, **kwargs):
-        max_retries = 10
-        initial_delay = 5
+        max_retries = 5
+        initial_delay = 1
         for attempt in range(max_retries):
             try:
                 return func(*args, **kwargs)
